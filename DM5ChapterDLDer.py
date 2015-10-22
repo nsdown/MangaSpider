@@ -24,19 +24,22 @@ class DM5ChapterDLDer:
         return self.chfunBaseURL + "?cid=" + self.cid + "&page=" + str(
             page) + "&key=&language=" + self.lang + "&gtk=" + self.gtk
 
-    def EchoFromChfun(self):
+    def EchoFromChfun(self, sleepTime, proxy=None):
         page = 1
         while True:
-            req = requests.get(self.GetChfunURL(page), headers=self.headers)
+            req = requests.get(self.GetChfunURL(page), headers=self.headers, proxies=proxy)
             resp = jsbeautifier.beautify(req.content)
             key = re.sub('[^a-zA-Z\d]', '', resp[resp.find("key") + 3:resp.find("var", resp.find("key"))])
             pix = resp[resp.find("pix") + 3:resp.find("var", resp.find("pix"))].split("\"")[-2]
             pvalue = [resp[resp.find("pvalue") + 5:resp.find("var", resp.find("pvalue"))].split("\"")[i] for i in
                       [1, -2]]
             imgUrl = pix + pvalue[0] + "?cid=" + self.cid + "&key=" + key
-            r = requests.get(imgUrl, headers=self.headers)
+            r = requests.get(imgUrl, headers=self.headers, proxies=proxy)
             cwd = os.getcwd()
             imgPath = cwd + "\\" + self.cid + "\\" + str(page) + ".png"
+            imgDir = os.path.dirname(imgPath)
+            if not os.path.exists(imgDir):
+                os.makedirs(imgDir)
             with open(imgPath, "wb") as f:
                 f.write(r.content)
                 print "Page " + str(page) + " of chapter " + self.cid + " has been downloaded! "
@@ -44,8 +47,5 @@ class DM5ChapterDLDer:
                 break
             else:
                 page += 1
-                time.sleep(1)
-
-
-ins = DM5ChapterDLDer("/m224188")
-ins.EchoFromChfun()
+                time.sleep(sleepTime)
+                
