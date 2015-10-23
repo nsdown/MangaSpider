@@ -30,11 +30,11 @@ class DM5ChapterDLDer:
     def EchoFromChfun(self, sleepTime, proxy=None):
         self.currentPage = 1
         while True:
-            req = requests.get(self.GetChfunURL(self.currentPage), headers=self.__headers, proxies=proxy)
-            resp = jsbeautifier.beautify(req.content)
-            key = re.sub('[^a-zA-Z\d]', '', resp[resp.find("key") + 3:resp.find("var", resp.find("key"))])
-            pix = resp[resp.find("pix") + 3:resp.find("var", resp.find("pix"))].split("\"")[-2]
-            pvalue = [resp[resp.find("pvalue") + 5:resp.find("var", resp.find("pvalue"))].split("\"")[i] for i in
+            rawResp = requests.get(self.GetChfunURL(self.currentPage), headers=self.__headers, proxies=proxy)
+            niceResp = jsbeautifier.beautify(rawResp.content)
+            key = re.sub('[^a-zA-Z\d]', '', niceResp[niceResp.find("key") + 3:niceResp.find("var", niceResp.find("key"))])
+            pix = niceResp[niceResp.find("pix") + 3:niceResp.find("var", niceResp.find("pix"))].split("\"")[-2]
+            pvalue = [niceResp[niceResp.find("pvalue") + 5:niceResp.find("var", niceResp.find("pvalue"))].split("\"")[i] for i in
                       [1, -2]]
             imgUrl = pix + pvalue[0] + "?cid=" + self.cid + "&key=" + key
             r = requests.get(imgUrl, headers=self.__headers, proxies=proxy)
