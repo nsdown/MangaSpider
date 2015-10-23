@@ -4,11 +4,11 @@ from reportlab.lib.utils import ImageReader
 
 
 class ImageMerger:
-    def __init__(self, DLDer):
-        self.__imageDir = DLDer.downloadDir
+    def __init__(self, imageDir, outputFilename):
+        self.__imageDir = imageDir
         self.__outputDir = os.path.abspath(os.path.join(self.__imageDir, os.pardir))
-        self.__outputFilename = DLDer.cid+'.pdf'
-        self.__totalPages = DLDer.currentPage
+        self.__outputFilename = outputFilename
+        self.__totalPages = len(os.listdir(imageDir))
         self.outputPath = self.__outputDir+"\\"+self.__outputFilename
         return
 
@@ -26,5 +26,5 @@ class ImageMerger:
             except:
                 print "merge failure!"
         c.save()
-        print self.outputPath, " has is finished! "
+        print self.outputPath, " has been finished! "
         return
