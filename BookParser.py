@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 
 
-class ChapterParser:
+class BookParser:
     def __init__(self):
         self.__url = None
         self.__chList = []

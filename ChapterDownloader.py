@@ -6,9 +6,9 @@ import time
 import threading
 
 
-class ChapterDownloader(threading.Thread):
+class ChapterDownloader():
     def __init__(self, proxy=None):
-        threading.Thread.__init__(self)
+        # threading.Thread.__init__(self)
         self.__baseURL = None
         self.__chPath = None
         self.__chURL = None
@@ -16,7 +16,7 @@ class ChapterDownloader(threading.Thread):
         self.__chfunBaseURL = None
         self.__lang = None
         self.__gtk = None
-        self.cid = None
+        self.__cid = None
         self.__headers = None
         self.downloadDir = None
         self.__proxy = proxy
@@ -30,16 +30,16 @@ class ChapterDownloader(threading.Thread):
         self.__chfunBaseURL = self.__baseURL + self.__chfunBasePath
         self.__lang = "1"
         self.__gtk = "6"
-        self.cid = chpath.split('m')[-1]
+        self.__cid = chpath.split('m')[-1]
         self.__headers = {
             "Referer": self.__chURL
         }
         cwd = os.getcwd()
-        self.downloadDir = cwd + "\\" + self.cid
+        self.downloadDir = cwd + "\\" + self.__cid
         return
 
     def EchoFromChfun(self, page):
-        chfunUrl = self.__chfunBaseURL + "?cid=" + self.cid + "&page=" + str(
+        chfunUrl = self.__chfunBaseURL + "?cid=" + self.__cid + "&page=" + str(
             page) + "&key=&language=" + self.__lang + "&gtk=" + self.__gtk
         rawResp = requests.get(chfunUrl, headers=self.__headers, proxies=self.__proxy)
         niceResp = jsbeautifier.beautify(rawResp.content)
@@ -47,7 +47,7 @@ class ChapterDownloader(threading.Thread):
         pix = niceResp[niceResp.find("pix") + 3:niceResp.find("var", niceResp.find("pix"))].split("\"")[-2]
         pvalue = [niceResp[niceResp.find("pvalue") + 5:niceResp.find("var", niceResp.find("pvalue"))].split("\"")[i] for
                   i in [1, -2]]
-        imgUrl = pix + pvalue[0] + "?cid=" + self.cid + "&key=" + key
+        imgUrl = pix + pvalue[0] + "?cid=" + self.__cid + "&key=" + key
         return imgUrl, pvalue[0] != pvalue[1]
 
     def DownloadOneImg(self, page):
@@ -59,11 +59,11 @@ class ChapterDownloader(threading.Thread):
             os.makedirs(imgDir)
         with open(imgPath, "wb") as f:
             f.write(r.content)
-        print "Page " + str(page) + " of chapter " + self.cid + " has been downloaded! "
+        print "Page " + str(page) + " of chapter " + self.__cid + " has been downloaded! "
         if echo[1]:
             return True
         else:
-            print "Whole chapter " + self.cid + " has been downloaded! "
+            print "Whole chapter " + self.__cid + " has been downloaded! "
             return False
 
     def Work(self, sleepTime):
