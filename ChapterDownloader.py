@@ -25,10 +25,10 @@ class ChapterDownloader():
         return
 
     def GetQueue(self):
-        return self.tasker.workPool[self.__cid]
+        return self.tasker.GetQueueOfChapter(self.__chPath)
 
-    def GetCid(self):
-        return self.__cid
+    def GetChPath(self):
+        return self.__chPath
 
     def GetDownloadDir(self):
         return self.__downloadDir
@@ -39,7 +39,8 @@ class ChapterDownloader():
     def GetHeaders(self):
         return self.__headers
 
-    def GetWork(self, chpath):
+    def GetWork(self):
+        chpath = self.tasker.GetFirstChapter()[0]
         self.__chPath = chpath
         self.__chURL = self.__baseURL + self.__chPath
         self.__chfunBasePath = chpath + "/chapterfun.ashx"
@@ -47,7 +48,7 @@ class ChapterDownloader():
         self.__lang = "1"
         self.__gtk = "6"
         self.__cid = chpath.split('m')[-1]
-        self.tasker.PutIntoChapterQueue(self.__cid)
+        # self.tasker.PutIntoChapterQueue(self.__chPath)
         self.__headers = {
             "Referer": self.__chURL
         }
@@ -57,7 +58,6 @@ class ChapterDownloader():
             os.makedirs(self.__downloadDir)
         print "Retrieving image urls......"
         self.PutWorkIntoQueue()
-        print "Got all the image urls"
         return
 
     def EchoFromChfun(self, page):
@@ -77,7 +77,7 @@ class ChapterDownloader():
         while True:
             try:
                 imgUrl, page, isLastpage = self.EchoFromChfun(page)
-                self.tasker.PutIntoImageWorkQueue(self.__cid, (imgUrl, page))
+                self.tasker.PutIntoImageWorkQueue(self.__chPath, (imgUrl, page))
                 if isLastpage:
                     break
                 else:
@@ -89,16 +89,18 @@ class ChapterDownloader():
     def WorkersLineup(self):
         for i in range(self.__workerAmount):
             # you can set sleep time to 0 if u want
-            self.__workerPool.append(ImageDownloader(self, 1))
+            self.__workerPool.append(ImageDownloader(self, 5))
         return
 
     def Work(self):
         self.WorkersLineup()
         for worker in self.__workerPool:
-            worker.setDaemon(True)
-            worker.start()
+            if not worker.isDaemon():
+                worker.setDaemon(True)
+                worker.start()
         print "Downloading images of chapter ", self.__cid
         self.GetQueue().join()
         print "All images of chapter ", self.__cid, " has been downloaded"
+        self.tasker.PopOutChapter(self.__chPath)
         return
 

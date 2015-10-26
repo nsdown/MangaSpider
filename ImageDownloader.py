@@ -13,14 +13,14 @@ class ImageDownloader(threading.Thread):
 
     def run(self):
         while True:
-            work = self.chDlder.tasker.GetImageWork(self.chDlder.GetCid())
+            work = self.chDlder.tasker.GetImageWork(self.chDlder.GetChPath())
             imgUrl, page = work[0], work[1]
             try:
                 r = requests.get(imgUrl, headers=self.chDlder.GetHeaders(), proxies=self.chDlder.GetProxy())
                 imgPath = self.chDlder.GetDownloadDir() + "\\" + str(page) + ".png"
                 with open(imgPath, "wb") as f:
                     f.write(r.content)
-                print "Page " + str(page) + " of chapter " + self.chDlder.GetCid() + " has been downloaded! "
+                print "Page " + str(page) + " of chapter " + self.chDlder.GetChPath() + " has been downloaded! "
                 self.chDlder.GetQueue().task_done()
                 time.sleep(self.sleepTime)
             except:
