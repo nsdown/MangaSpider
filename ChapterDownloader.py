@@ -20,7 +20,7 @@ class ChapterDownloader():
         self.__downloadDir = None
         self.__proxy = proxy
         self.tasker = taskQueue
-        self.__workerAmount = 10
+        self.__workerAmount = 5
         self.__workerPool = []
         return
 
@@ -55,7 +55,9 @@ class ChapterDownloader():
         self.__downloadDir = cwd + "\\" + self.__cid
         if not os.path.exists(self.__downloadDir):
             os.makedirs(self.__downloadDir)
+        print "Retrieving image urls......"
         self.PutWorkIntoQueue()
+        print "Got all the image urls"
         return
 
     def EchoFromChfun(self, page):
@@ -86,7 +88,8 @@ class ChapterDownloader():
 
     def WorkersLineup(self):
         for i in range(self.__workerAmount):
-            self.__workerPool.append(ImageDownloader(self))
+            # you can set sleep time to 0 if u want
+            self.__workerPool.append(ImageDownloader(self, 1))
         return
 
     def Work(self):
