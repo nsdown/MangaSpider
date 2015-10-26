@@ -1,5 +1,5 @@
 from Queue import Queue
-from ChapterWork import ChapterWork
+
 
 class TaskQueue:
     def __init__(self):
@@ -20,9 +20,5 @@ class TaskQueue:
         self.__chapterQueue.put(chwork)
         return
 
-    def GetImageWork(self, chPath):
-        return self.__chapterQueue[chPath].get()
-
     def GetChapterWork(self):
-        # TODO this is not the first item, make workPool into workQueue
         return self.__chapterQueue.get()

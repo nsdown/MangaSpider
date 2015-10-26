@@ -5,7 +5,7 @@ import os
 from ImageDownloader import ImageDownloader
 
 
-class ChapterDownloader():
+class ChapterDownloader:
     def __init__(self, taskQueue, proxy=None):
         # threading.Thread.__init__(self)
         self.__chWork = None
@@ -73,7 +73,7 @@ class ChapterDownloader():
                 else:
                     page += 1
             except:
-                # TODO hear echo failed
+                # TODO excetion handling
                 return
 
     def WorkersLineup(self):
@@ -90,7 +90,6 @@ class ChapterDownloader():
                 worker.setDaemon(True)
                 worker.start()
         self.GetImgQueue().join()
-        print "All images of chapter " , self.GetChapterName() , " has been downloaded"
+        print "All images of chapter ", self.GetChapterName(), " has been downloaded"
         self.tasker.PutIntoMergerQueue(self.__chWork)
         return
-

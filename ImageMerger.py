@@ -28,6 +28,7 @@ class ImageMerger:
                 c.showPage()
                 print fn, " has been merged into PDF: ", self.outputPath
             except:
+                # TODO excetion handling
                 print "merge failure!"
         c.save()
         print self.outputPath, " has been finished! "

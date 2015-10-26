@@ -1,6 +1,7 @@
 from Queue import Queue
 import os
 
+
 class ChapterWork:
     def __init__(self, no, chName, chPath):
         self.chName = chName
