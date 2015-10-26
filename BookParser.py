@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+from ChapterWork import ChapterWork
 
 
 class BookParser:
@@ -22,7 +23,7 @@ class BookParser:
             oneCol = col.find_all("a", attrs={"class": "tg"})
             for ch in oneCol:
                 self.__chList.append((no, ch.get("href"), ch.get("title")))
-                self.tasker.PutIntoChapterQueue(ch.get("href").rstrip("/"))
+                self.tasker.PutIntoChapterQueue(ChapterWork(no, ch.get("title"), ch.get("href").rstrip("/")))
                 no += 1
 
     def PrintAllHref(self):

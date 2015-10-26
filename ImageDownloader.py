@@ -14,14 +14,14 @@ class ImageDownloader(threading.Thread):
     def run(self):
         while True:
             try:
-                work = self.chDlder.tasker.GetImageWork(self.chDlder.GetChPath())
+                work = self.chDlder.GetImgQueue().get()
                 imgUrl, page = work[0], work[1]
                 r = requests.get(imgUrl, headers=self.chDlder.GetHeaders(), proxies=self.chDlder.GetProxy())
                 imgPath = self.chDlder.GetDownloadDir() + "\\" + str(page) + ".png"
                 with open(imgPath, "wb") as f:
                     f.write(r.content)
                 print "Page " + str(page) + " of chapter " + self.chDlder.GetChPath() + " has been downloaded! "
-                self.chDlder.GetQueue().task_done()
+                self.chDlder.GetImgQueue().task_done()
                 time.sleep(self.sleepTime)
             except:
                 # TODO failed downloading

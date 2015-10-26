@@ -8,30 +8,20 @@ from ImageDownloader import ImageDownloader
 class ChapterDownloader():
     def __init__(self, taskQueue, proxy=None):
         # threading.Thread.__init__(self)
+        self.__chWork = None
         self.__baseURL = "http://www.dm5.com"
-        self.__chPath = None
-        self.__chURL = None
-        self.__chfunBasePath = None
-        self.__chfunBaseURL = None
         self.__lang = None
         self.__gtk = None
         self.__cid = None
         self.__headers = None
-        self.__downloadDir = None
         self.__proxy = proxy
         self.tasker = taskQueue
         self.__workerAmount = 5
         self.__workerPool = []
         return
 
-    def GetQueue(self):
-        return self.tasker.GetQueueOfChapter(self.__chPath)
-
-    def GetChPath(self):
-        return self.__chPath
-
-    def GetDownloadDir(self):
-        return self.__downloadDir
+    def GetImgQueue(self):
+        return self.__chWork.imgQueue
 
     def GetProxy(self):
         return self.__proxy
@@ -40,28 +30,22 @@ class ChapterDownloader():
         return self.__headers
 
     def GetWork(self):
-        chpath = self.tasker.GetFirstChapter()[0]
-        self.__chPath = chpath
-        self.__chURL = self.__baseURL + self.__chPath
-        self.__chfunBasePath = chpath + "/chapterfun.ashx"
-        self.__chfunBaseURL = self.__baseURL + self.__chfunBasePath
+        self.__chWork = self.tasker.GetChapterWork()
         self.__lang = "1"
         self.__gtk = "6"
-        self.__cid = chpath.split('m')[-1]
-        # self.tasker.PutIntoChapterQueue(self.__chPath)
+        self.__cid = self.__chWork.chPath.split('m')[-1]
+        # self.tasker.PutIntoChapterQueue(self.__chWork.chPath)
         self.__headers = {
-            "Referer": self.__chURL
+            "Referer": self.__baseURL + self.__chWork.chPath
         }
-        cwd = os.getcwd()
-        self.__downloadDir = cwd + "\\" + self.__cid
-        if not os.path.exists(self.__downloadDir):
-            os.makedirs(self.__downloadDir)
+        if not os.path.exists(self.__chWork.downloadDir):
+            os.makedirs(self.__chWork.downloadDir)
         print "Retrieving image urls......"
         self.PutWorkIntoQueue()
         return
 
     def EchoFromChfun(self, page):
-        chfunUrl = self.__chfunBaseURL + "?cid=" + self.__cid + "&page=" + str(
+        chfunUrl = self.__baseURL + self.__chWork.chPath + "/chapterfun.ashx" + "?cid=" + self.__cid + "&page=" + str(
             page) + "&key=&language=" + self.__lang + "&gtk=" + self.__gtk
         rawResp = requests.get(chfunUrl, headers=self.__headers, proxies=self.__proxy)
         niceResp = jsbeautifier.beautify(rawResp.content)
@@ -77,7 +61,7 @@ class ChapterDownloader():
         while True:
             try:
                 imgUrl, page, isLastpage = self.EchoFromChfun(page)
-                self.tasker.PutIntoImageWorkQueue(self.__chPath, (imgUrl, page))
+                self.__chWork.PutIntoImgQueue((imgUrl, page))
                 if isLastpage:
                     break
                 else:
@@ -99,9 +83,8 @@ class ChapterDownloader():
                 worker.setDaemon(True)
                 worker.start()
         print "Downloading images of chapter ", self.__cid
-        self.GetQueue().join()
+        self.GetImgQueue().join()
         print "All images of chapter ", self.__cid, " has been downloaded"
-        self.tasker.PopOutChapter(self.__chPath)
-        self.tasker.PutIntoMergerQueue(self.__downloadDir, self.__cid)
+        self.tasker.PutIntoMergerQueue(self.__chWork.downloadDir, self.__cid)
         return
 
