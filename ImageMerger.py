@@ -4,13 +4,22 @@ from reportlab.lib.utils import ImageReader
 
 
 class ImageMerger:
-    def __init__(self, imageDir, outputFilename):
-        self.__imageDir = imageDir
-        self.__outputDir = os.path.abspath(os.path.join(self.__imageDir, os.pardir))
-        self.__outputFilename = outputFilename
-        self.__totalPages = len(os.listdir(imageDir))
-        self.outputPath = self.__outputDir+"\\"+self.__outputFilename
+    def __init__(self, TQ):
+        self.__imageDir = None
+        self.__outputDir = None
+        self.__outputFilename = None
+        self.__totalPages = None
+        self.outputPath = None
+        self.tasker = TQ
         return
+
+    def GetWork(self):
+        imgDir, outputFn = self.tasker.GetMergerWork()
+        self.__imageDir = imgDir
+        self.__outputDir = os.path.abspath(os.path.join(self.__imageDir, os.pardir))
+        self.__outputFilename = outputFn
+        self.__totalPages = len(os.listdir(imgDir))
+        self.outputPath = self.__outputDir+"\\"+self.__outputFilename+".pdf"
 
     def Merge(self):
         c = canvas.Canvas(self.outputPath)

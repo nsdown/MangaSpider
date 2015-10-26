@@ -4,7 +4,14 @@ from Queue import Queue
 class TaskQueue:
     def __init__(self):
         self.__workPool = {}
+        self.__mergerQueue = Queue()
         return
+
+    def PutIntoMergerQueue(self, imgDir, outputFn):
+        self.__mergerQueue.put((imgDir, outputFn))
+
+    def GetMergerWork(self):
+        return self.__mergerQueue.get()
 
     def IsEmpty(self):
         return len(self.__workPool) == 0

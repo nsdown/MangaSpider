@@ -13,9 +13,9 @@ class ImageDownloader(threading.Thread):
 
     def run(self):
         while True:
-            work = self.chDlder.tasker.GetImageWork(self.chDlder.GetChPath())
-            imgUrl, page = work[0], work[1]
             try:
+                work = self.chDlder.tasker.GetImageWork(self.chDlder.GetChPath())
+                imgUrl, page = work[0], work[1]
                 r = requests.get(imgUrl, headers=self.chDlder.GetHeaders(), proxies=self.chDlder.GetProxy())
                 imgPath = self.chDlder.GetDownloadDir() + "\\" + str(page) + ".png"
                 with open(imgPath, "wb") as f:

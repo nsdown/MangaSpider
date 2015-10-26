@@ -89,7 +89,7 @@ class ChapterDownloader():
     def WorkersLineup(self):
         for i in range(self.__workerAmount):
             # you can set sleep time to 0 if u want
-            self.__workerPool.append(ImageDownloader(self, 5))
+            self.__workerPool.append(ImageDownloader(self, 1))
         return
 
     def Work(self):
@@ -102,5 +102,6 @@ class ChapterDownloader():
         self.GetQueue().join()
         print "All images of chapter ", self.__cid, " has been downloaded"
         self.tasker.PopOutChapter(self.__chPath)
+        self.tasker.PutIntoMergerQueue(self.__downloadDir, self.__cid)
         return
 
