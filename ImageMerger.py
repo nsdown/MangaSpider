@@ -18,7 +18,7 @@ class ImageMerger:
 
     def Merge(self):
         c = canvas.Canvas(self.outputPath)
-        for pn in range(1, len(os.listdir(self.__chWork.downloadDir))):
+        for pn in range(1, len(os.listdir(self.__chWork.downloadDir)) + 1):
             try:
                 fn = self.__chWork.downloadDir+"\\"+str(pn)+".png"
                 im = ImageReader(fn)
