@@ -9,6 +9,3 @@ just pip install all of them
 ## How to use
 here's an example:
 https://gist.github.com/juiceyang/3620db12988fae3404f8
-
-## Disclaimer
-THIS SOFTWARE IS FOR LEARNING PURPOSE ONLY. IT COMES WITHOUT ANY WARRANTY.
