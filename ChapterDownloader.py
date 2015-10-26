@@ -2,14 +2,13 @@ import requests
 import jsbeautifier
 import re
 import os
-import time
-import threading
+from ImageDownloader import ImageDownloader
 
 
 class ChapterDownloader():
-    def __init__(self, proxy=None):
+    def __init__(self, taskQueue, proxy=None):
         # threading.Thread.__init__(self)
-        self.__baseURL = None
+        self.__baseURL = "http://www.dm5.com"
         self.__chPath = None
         self.__chURL = None
         self.__chfunBasePath = None
@@ -18,12 +17,29 @@ class ChapterDownloader():
         self.__gtk = None
         self.__cid = None
         self.__headers = None
-        self.downloadDir = None
+        self.__downloadDir = None
         self.__proxy = proxy
+        self.tasker = taskQueue
+        self.__workerAmount = 10
+        self.__workerPool = []
         return
 
+    def GetQueue(self):
+        return self.tasker.workPool[self.__cid]
+
+    def GetCid(self):
+        return self.__cid
+
+    def GetDownloadDir(self):
+        return self.__downloadDir
+
+    def GetProxy(self):
+        return self.__proxy
+
+    def GetHeaders(self):
+        return self.__headers
+
     def GetWork(self, chpath):
-        self.__baseURL = "http://www.dm5.com"
         self.__chPath = chpath
         self.__chURL = self.__baseURL + self.__chPath
         self.__chfunBasePath = chpath + "/chapterfun.ashx"
@@ -31,11 +47,15 @@ class ChapterDownloader():
         self.__lang = "1"
         self.__gtk = "6"
         self.__cid = chpath.split('m')[-1]
+        self.tasker.PutIntoChapterQueue(self.__cid)
         self.__headers = {
             "Referer": self.__chURL
         }
         cwd = os.getcwd()
-        self.downloadDir = cwd + "\\" + self.__cid
+        self.__downloadDir = cwd + "\\" + self.__cid
+        if not os.path.exists(self.__downloadDir):
+            os.makedirs(self.__downloadDir)
+        self.PutWorkIntoQueue()
         return
 
     def EchoFromChfun(self, page):
@@ -48,30 +68,34 @@ class ChapterDownloader():
         pvalue = [niceResp[niceResp.find("pvalue") + 5:niceResp.find("var", niceResp.find("pvalue"))].split("\"")[i] for
                   i in [1, -2]]
         imgUrl = pix + pvalue[0] + "?cid=" + self.__cid + "&key=" + key
-        return imgUrl, pvalue[0] != pvalue[1]
+        return imgUrl, page, pvalue[0] == pvalue[1]
 
-    def DownloadOneImg(self, page):
-        echo = self.EchoFromChfun(page)
-        r = requests.get(echo[0], headers=self.__headers, proxies=self.__proxy)
-        imgPath = self.downloadDir + "\\" + str(page) + ".png"
-        imgDir = os.path.dirname(imgPath)
-        if not os.path.exists(imgDir):
-            os.makedirs(imgDir)
-        with open(imgPath, "wb") as f:
-            f.write(r.content)
-        print "Page " + str(page) + " of chapter " + self.__cid + " has been downloaded! "
-        if echo[1]:
-            return True
-        else:
-            print "Whole chapter " + self.__cid + " has been downloaded! "
-            return False
-
-    def Work(self, sleepTime):
+    def PutWorkIntoQueue(self):
         page = 1
         while True:
-            undone = self.DownloadOneImg(page)
-            if undone:
-                page += 1
-                time.sleep(sleepTime)
-            else:
-                break
+            try:
+                imgUrl, page, isLastpage = self.EchoFromChfun(page)
+                self.tasker.PutIntoImageWorkQueue(self.__cid, (imgUrl, page))
+                if isLastpage:
+                    break
+                else:
+                    page += 1
+            except:
+                # TODO hear echo failed
+                return
+
+    def WorkersLineup(self):
+        for i in range(self.__workerAmount):
+            self.__workerPool.append(ImageDownloader(self))
+        return
+
+    def Work(self):
+        self.WorkersLineup()
+        for worker in self.__workerPool:
+            worker.setDaemon(True)
+            worker.start()
+        print "Downloading images of chapter ", self.__cid
+        self.GetQueue().join()
+        print "All images of chapter ", self.__cid, " has been downloaded"
+        return
+
