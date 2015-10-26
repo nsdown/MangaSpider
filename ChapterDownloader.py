@@ -83,8 +83,8 @@ class ChapterDownloader:
         return
 
     def Work(self):
-        self.WorkersLineup()
         print "Downloading images of chapter ", self.GetChapterName()
+        self.WorkersLineup()
         for worker in self.__workerPool:
             if not worker.isDaemon():
                 worker.setDaemon(True)
