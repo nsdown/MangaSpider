@@ -20,6 +20,12 @@ class ChapterDownloader():
         self.__workerPool = []
         return
 
+    def GetChapterName(self):
+        return self.__chWork.chName
+
+    def GetDownloadDir(self):
+        return self.__chWork.downloadDir
+
     def GetImgQueue(self):
         return self.__chWork.imgQueue
 
@@ -78,13 +84,13 @@ class ChapterDownloader():
 
     def Work(self):
         self.WorkersLineup()
+        print "Downloading images of chapter ", self.GetChapterName()
         for worker in self.__workerPool:
             if not worker.isDaemon():
                 worker.setDaemon(True)
                 worker.start()
-        print "Downloading images of chapter ", self.__cid
         self.GetImgQueue().join()
-        print "All images of chapter ", self.__cid, " has been downloaded"
-        self.tasker.PutIntoMergerQueue(self.__chWork.downloadDir, self.__cid)
+        print "All images of chapter " , self.GetChapterName() , " has been downloaded"
+        self.tasker.PutIntoMergerQueue(self.__chWork)
         return
 

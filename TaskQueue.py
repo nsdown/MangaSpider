@@ -7,8 +7,8 @@ class TaskQueue:
         self.__mergerQueue = Queue()
         return
 
-    def PutIntoMergerQueue(self, imgDir, outputFn):
-        self.__mergerQueue.put((imgDir, outputFn))
+    def PutIntoMergerQueue(self, chWork):
+        self.__mergerQueue.put(chWork)
 
     def GetMergerWork(self):
         return self.__mergerQueue.get()

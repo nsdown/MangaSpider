@@ -20,7 +20,7 @@ class ImageDownloader(threading.Thread):
                 imgPath = self.chDlder.GetDownloadDir() + "\\" + str(page) + ".png"
                 with open(imgPath, "wb") as f:
                     f.write(r.content)
-                print "Page " + str(page) + " of chapter " + self.chDlder.GetChPath() + " has been downloaded! "
+                print "Page " , str(page) , " of chapter " , self.chDlder.GetChapterName() , " has been downloaded! "
                 self.chDlder.GetImgQueue().task_done()
                 time.sleep(self.sleepTime)
             except:
