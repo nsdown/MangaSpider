@@ -22,7 +22,6 @@ class ImageDownloader(threading.Thread):
                         f.write(r.content)
                     sys.stdout.write(time.asctime(time.localtime(time.time())) + " : " + "Page " + str(
                         page) + " of chapter " + self.chDlder.GetChapterName() + " has been downloaded!\n")
-                    # print "Page " , str(page) , " of chapter " , self.chDlder.GetChapterName() , " has been downloaded! "
                     self.chDlder.GetImgQueue().task_done()
                     time.sleep(self.sleepTime)
                 except:
