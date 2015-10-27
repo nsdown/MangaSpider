@@ -19,6 +19,7 @@ class ChapterDownloader:
         self.tasker = taskQueue
         self.__workerAmount = 30
         self.__workerPool = []
+        self.WorkersLineup()
         return
 
     def GetChapterName(self):
@@ -41,15 +42,14 @@ class ChapterDownloader:
         self.__lang = "1"
         self.__gtk = "6"
         self.__cid = self.__chWork.chPath.split('m')[-1]
-        # self.tasker.PutIntoChapterQueue(self.__chWork.chPath)
         self.__headers = {
             "Referer": self.__baseURL + self.__chWork.chPath
         }
         if not os.path.exists(self.__chWork.downloadDir):
             os.makedirs(self.__chWork.downloadDir)
         sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"Retrieving image urls......\n")
-        # print "Retrieving image urls......"
         self.PutWorkIntoQueue()
+        sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"Downloading images of chapter "+self.GetChapterName()+"\n")
         return
 
     def EchoFromChfun(self, page):
@@ -76,7 +76,6 @@ class ChapterDownloader:
                     page += 1
             except:
                 sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"Failed retrieving img url of page: "+str(page)+"\n")
-                # print "Failed retrieving img url of page: ", page
                 continue
 
     def WorkersLineup(self):
@@ -86,15 +85,12 @@ class ChapterDownloader:
         return
 
     def Work(self):
-        sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"Downloading images of chapter "+self.GetChapterName()+"\n")
-        # print "Downloading images of chapter ", self.GetChapterName()
-        self.WorkersLineup()
         for worker in self.__workerPool:
             if not worker.isDaemon():
                 worker.setDaemon(True)
                 worker.start()
+        # TODO kill all threads at last
         self.GetImgQueue().join()
         sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"All images of chapter "+self.GetChapterName()+ " has been downloaded\n")
-        # print "All images of chapter ", self.GetChapterName(), " has been downloaded"
         self.tasker.PutIntoMergerQueue(self.__chWork)
         return
