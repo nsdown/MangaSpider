@@ -29,12 +29,9 @@ class ImageMerger:
                 c.drawImage(fn, 0, 0)
                 c.showPage()
                 sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+fn+"has been merged into PDF: "+self.outputPath+"\n")
-                # print fn, " has been merged into PDF: ", self.outputPath
             except:
                 # TODO excetion handling
                 sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"merge failure!\n")
-                # print "merge failure!"
         c.save()
         sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+self.outputPath+" is done.\n")
-        # print self.outputPath, " has been finished! "
         return

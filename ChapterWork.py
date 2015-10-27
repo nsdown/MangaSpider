@@ -13,6 +13,5 @@ class ChapterWork:
         self.outputDir = os.path.abspath(os.path.join(self.downloadDir, os.pardir))
 
     def PutIntoImgQueue(self, imgWork):
-        # imgwork structure: (imgurl, page)
         self.imgQueue.put(imgWork)
         return
