@@ -1,6 +1,8 @@
 import os
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
+import sys
+import time
 
 
 class ImageMerger:
@@ -26,10 +28,13 @@ class ImageMerger:
                 c.setPageSize(imageSize)
                 c.drawImage(fn, 0, 0)
                 c.showPage()
-                print fn, " has been merged into PDF: ", self.outputPath
+                sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+fn+"has been merged into PDF: "+self.outputPath+"\n")
+                # print fn, " has been merged into PDF: ", self.outputPath
             except:
                 # TODO excetion handling
-                print "merge failure!"
+                sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"merge failure!\n")
+                # print "merge failure!"
         c.save()
-        print self.outputPath, " has been finished! "
+        sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+self.outputPath+" is done.\n")
+        # print self.outputPath, " has been finished! "
         return

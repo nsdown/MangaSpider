@@ -3,6 +3,7 @@ import jsbeautifier
 import re
 import os
 from ImageDownloader import ImageDownloader
+import sys, time
 
 
 class ChapterDownloader:
@@ -16,7 +17,7 @@ class ChapterDownloader:
         self.__headers = None
         self.__proxy = proxy
         self.tasker = taskQueue
-        self.__workerAmount = 5
+        self.__workerAmount = 30
         self.__workerPool = []
         return
 
@@ -46,7 +47,8 @@ class ChapterDownloader:
         }
         if not os.path.exists(self.__chWork.downloadDir):
             os.makedirs(self.__chWork.downloadDir)
-        print "Retrieving image urls......"
+        sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"Retrieving image urls......\n")
+        # print "Retrieving image urls......"
         self.PutWorkIntoQueue()
         return
 
@@ -73,23 +75,26 @@ class ChapterDownloader:
                 else:
                     page += 1
             except:
-                # TODO excetion handling
-                return
+                sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"Failed retrieving img url of page: "+str(page)+"\n")
+                # print "Failed retrieving img url of page: ", page
+                continue
 
     def WorkersLineup(self):
         for i in range(self.__workerAmount):
             # you can set sleep time to 0 if u want
-            self.__workerPool.append(ImageDownloader(self, 1))
+            self.__workerPool.append(ImageDownloader(self, 0))
         return
 
     def Work(self):
-        print "Downloading images of chapter ", self.GetChapterName()
+        sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"Downloading images of chapter "+self.GetChapterName()+"\n")
+        # print "Downloading images of chapter ", self.GetChapterName()
         self.WorkersLineup()
         for worker in self.__workerPool:
             if not worker.isDaemon():
                 worker.setDaemon(True)
                 worker.start()
         self.GetImgQueue().join()
-        print "All images of chapter ", self.GetChapterName(), " has been downloaded"
+        sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"All images of chapter "+self.GetChapterName()+ " has been downloaded\n")
+        # print "All images of chapter ", self.GetChapterName(), " has been downloaded"
         self.tasker.PutIntoMergerQueue(self.__chWork)
         return
