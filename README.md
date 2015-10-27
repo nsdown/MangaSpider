@@ -2,7 +2,9 @@
 scrape manga from dm5.com and print downloaded images into PDF file so you can read on kindle
 
 ## Prerequisite
-u need to install requests, reportlab and jsbeautifier
+python 2.7 is required
+
+you also need to install requests, reportlab and jsbeautifier
 
 just pip install all of them
 
