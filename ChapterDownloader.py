@@ -89,6 +89,7 @@ class ChapterDownloader:
             if not worker.isDaemon():
                 worker.setDaemon(True)
                 worker.start()
+        # TODO kill all threads at last
         self.GetImgQueue().join()
         sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"All images of chapter "+self.GetChapterName()+ " has been downloaded\n")
         self.tasker.PutIntoMergerQueue(self.__chWork)
