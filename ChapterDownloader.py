@@ -48,8 +48,8 @@ class ChapterDownloader:
         if not os.path.exists(self.__chWork.downloadDir):
             os.makedirs(self.__chWork.downloadDir)
         sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"Retrieving image urls......\n")
-        self.PutWorkIntoQueue()
         sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"Downloading images of chapter "+self.GetChapterName()+"\n")
+        self.PutWorkIntoQueue()
         return
 
     def EchoFromChfun(self, page):
