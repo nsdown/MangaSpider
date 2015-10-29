@@ -6,7 +6,7 @@ import sys
 
 
 class BookParser:
-    def __init__(self, taskQueue, proxy):
+    def __init__(self, taskQueue, proxy=None):
         self.__url = None
         self.tasker = taskQueue
         self.__proxy = proxy
