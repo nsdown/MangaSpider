@@ -5,7 +5,14 @@ class TaskQueue:
     def __init__(self):
         self.__chapterQueue = Queue()
         self.__mergerQueue = Queue()
+        self.__pusherQueue = Queue()
         return
+
+    def PutIntoPusherQueue(self, chWork):
+        self.__pusherQueue.put(chWork)
+
+    def GetPusherWork(self):
+        return self.__pusherQueue.get()
 
     def PutIntoMergerQueue(self, chWork):
         self.__mergerQueue.put(chWork)

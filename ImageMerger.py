@@ -34,4 +34,5 @@ class ImageMerger:
                 sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+"merge failure!\n")
         c.save()
         sys.stdout.write(time.asctime(time.localtime(time.time()))+" : "+self.outputPath+" is done.\n")
+        self.tasker.PutIntoPusherQueue(self.__chWork)
         return
