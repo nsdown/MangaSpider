@@ -1,5 +1,5 @@
 # MangaSpider
-scrape manga from dm5.com and print downloaded images into PDF file so you can read on kindle
+download manga from dm5.com and print downloaded images into PDF file so you can read on kindle
 
 ## Prerequisite
 python 2.7 is required
