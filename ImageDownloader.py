@@ -1,3 +1,4 @@
+import os
 import requests
 import threading
 import time, sys
@@ -17,7 +18,8 @@ class ImageDownloader(threading.Thread):
                 imgUrl, page = work[0], work[1]
                 try:
                     r = requests.get(imgUrl, headers=self.chDlder.GetHeaders(), proxies=self.chDlder.GetProxy())
-                    imgPath = self.chDlder.GetDownloadDir() + "\\" + str(page) + ".png"
+                    # imgPath = self.chDlder.GetDownloadDir() + "\\" + str(page) + ".png"
+                    imgPath = os.path.join(self.chDlder.GetDownloadDir(), str(page)+".png")
                     with open(imgPath, "wb") as f:
                         f.write(r.content)
                     sys.stdout.write(time.asctime(time.localtime(time.time())) + " : " + "Page " + str(
